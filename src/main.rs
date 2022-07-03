@@ -10,10 +10,16 @@ const SPEED_F1: f32 = 16.0;
 const SPEED_F2: f32 = 16.0;
 const SPEED_F3: f32 = 32.0;
 const SPEED_F4: f32 = 32.0;
-const SPEED_B2: f32 = 0.001;
+const SPEED_B3: f32 = 0.001;
+const SPEED_B2: f32 = 0.005;
 const SPEED_B1: f32 = 0.01;
 const SPEED_B0: f32 = 0.1;
-const LAYER_B2: f32 = 000.0;
+
+const SCALE_X_B2: f32 = 1.0;
+const SCALE_Y_B2: f32 = 0.125; //125;
+
+const LAYER_B3: f32 = 000.0;
+const LAYER_B2: f32 = 005.0;
 const LAYER_B1: f32 = 010.0;
 const LAYER_B0: f32 = 100.0;
 const LAYER_F1: f32 = 200.0;
@@ -22,6 +28,7 @@ const LAYER_F3: f32 = 400.0;
 const LAYER_F4: f32 = 500.0;
 
 pub struct LayerEntities {
+    b3: Entity,
     b2: Entity,
     b1: Entity,
     b0: Entity,
@@ -81,20 +88,16 @@ fn on_enter(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ParallaxBackgroundMaterial>>,
 ) {
-    commands.spawn_bundle(UiCameraBundle::default());
-    let background_mesh: Mesh2dHandle = meshes
-        .add(Mesh::from(shape::Quad::new(Vec2::new(1.0, 1.0))).into())
+    let background_mesh_only_number_of_vertices_matter: Mesh2dHandle = meshes
+        .add(Mesh::from(shape::Quad::new(Vec2::default())).into())
         .into();
     let bg0 = commands.spawn_bundle(MaterialMesh2dBundle {
-        mesh: background_mesh.clone(),
+        mesh: background_mesh_only_number_of_vertices_matter.clone(),
         transform: Transform::from_xyz(0.0, 0.0, LAYER_B0),
         material: materials
             .add(
                 ParallaxBackgroundMaterial {
-                    parameters: ParallaxParameters {
-                        x_speed: SPEED_B0,
-                        y_speed: SPEED_B0,
-                    },
+                    parameters: ParallaxParameters::fullscreen(SPEED_B0,SPEED_B0),
                     texture: asset_server.load("backgrounds/bg0.png").into(),
                 },
             )
@@ -102,23 +105,20 @@ fn on_enter(
         ..Default::default()
     }).id();
     let bg1 = commands.spawn_bundle(ParallaxBackgroundBundle {
-        mesh: background_mesh.clone(),
+        mesh: background_mesh_only_number_of_vertices_matter.clone(),
         transform: Transform::from_xyz(0.0, 0.0, LAYER_B1),
         material: materials
             .add(
                 ParallaxBackgroundMaterial {
-                    parameters: ParallaxParameters {
-                        x_speed: SPEED_B1,
-                        y_speed: SPEED_B1,
-                    },
+                    parameters: ParallaxParameters::fullscreen(SPEED_B1,SPEED_B1),
                     texture: asset_server.load("backgrounds/bg1.png").into(),
                 },
             )
             .into(),
         ..Default::default()
     }).id();
-    let bg2 = commands.spawn_bundle(ParallaxBackgroundBundle {
-        mesh: background_mesh.clone(),
+	let bg2 = commands.spawn_bundle(ParallaxBackgroundBundle {
+        mesh: background_mesh_only_number_of_vertices_matter.clone(),
         transform: Transform::from_xyz(0.0, 0.0, LAYER_B2),
         material: materials
             .add(
@@ -126,8 +126,23 @@ fn on_enter(
                     parameters: ParallaxParameters {
                         x_speed: SPEED_B2,
                         y_speed: SPEED_B2,
+                        x_scale: SCALE_X_B2,
+                        y_scale: SCALE_Y_B2,
                     },
                     texture: asset_server.load("backgrounds/bg2.png").into(),
+                },
+            )
+            .into(),
+        ..Default::default()
+    }).id();
+    let bg3 = commands.spawn_bundle(ParallaxBackgroundBundle {
+        mesh: background_mesh_only_number_of_vertices_matter.clone(),
+        transform: Transform::from_xyz(0.0, 0.0, LAYER_B3),
+        material: materials
+            .add(
+                ParallaxBackgroundMaterial {
+                    parameters: ParallaxParameters::fullscreen(SPEED_B3,SPEED_B3),
+                    texture: asset_server.load("backgrounds/bg3.png").into(),
                 },
             )
             .into(),
@@ -173,6 +188,7 @@ fn on_enter(
             y: SPEED_F4,
         }).id();
         entities = Some(LayerEntities {
+            b3: bg3,
             b2: bg2,
             b1: bg1,
             b0: bg0,
@@ -271,8 +287,8 @@ fn handle_input(
             visibility.is_visible = !visibility.is_visible;
         }
     }
-    if keys.just_pressed(KeyCode::E) {
-        if let Ok(mut visibility) = query.get_mut(entities.b2) {
+    if keys.just_pressed(KeyCode::R) {
+        if let Ok(mut visibility) = query.get_mut(entities.b3) {
             visibility.is_visible = !visibility.is_visible;
         }
     }

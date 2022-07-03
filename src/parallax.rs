@@ -69,6 +69,21 @@ pub struct ParallaxParameters {
     pub x_speed: f32,
     /// Speed of Parallax on the Y axis
     pub y_speed: f32,
+    /// Scale of the texture on X axis compared to screen (1.0 = whole texture visible at once, 0.5 = half the texture visible at once)
+    pub x_scale: f32,
+    /// Scale of the texture on Y axis compared to screen (1.0 = whole texture visible at once, 0.5 = half the texture visible at once)
+    pub y_scale: f32,
+}
+
+impl ParallaxParameters {
+    pub fn fullscreen(x_speed: f32, y_speed: f32) -> Self {
+        Self {
+            x_speed,
+            y_speed,
+            x_scale: 1.0,
+            y_scale: 1.0,
+        }
+    }
 }
 
 impl Default for ParallaxParameters {
@@ -76,6 +91,8 @@ impl Default for ParallaxParameters {
         Self {
             x_speed: 0.0,
             y_speed: 0.0,
+            x_scale: 1.0,
+            y_scale: 1.0,
         }
     }
 }
