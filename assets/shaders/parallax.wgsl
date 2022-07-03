@@ -23,6 +23,8 @@ struct Vertex {
 struct ParallaxMaterial {
     x_speed: f32;
     y_speed: f32;
+    x_scale: f32;
+    y_scale: f32;
 };
 
 [[group(0), binding(0)]] var<uniform> view: View;
@@ -47,8 +49,8 @@ fn vertex(vertex: Vertex) -> [[builtin(position)]] vec4<f32> {
 [[stage(fragment)]]
 fn fragment([[builtin(position)]] clip_position: vec4<f32>) -> [[location(0)]] vec4<f32> {
     let uv = vec2<f32>(
-        (clip_position.x / view.width) + (view.world_position.x * material.x_speed),
-        (clip_position.y / view.height) - (view.world_position.y * material.y_speed)
+        ((clip_position.x / view.width) + (view.world_position.x * material.x_speed)) * material.x_scale,
+        ((clip_position.y / view.height) - (view.world_position.y * material.y_speed)) * material.y_scale 
     );
     let color = textureSample(texture, texture_sampler, uv);
     return color;
